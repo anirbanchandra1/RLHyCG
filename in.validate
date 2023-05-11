@@ -1,0 +1,65 @@
+# Initialization
+
+dimension       3
+boundary        p p p
+atom_style      full
+units           metal
+neighbor        2.5 bin
+neigh_modify delay 1
+
+# Reading the data file
+read_data input.data  nocoeff
+# input.data contains 1807 Extractant molecules and 1 Dodecane molecule. 
+# They are randomply packed using packmol in a 12nm x 12nm x 12nm simulation box.  
+
+mass 1 14.027 #C2 bead
+mass 2 15.035 #C3 bead
+mass 3 57.054 #AMD bead
+mass 4 13.018 #C1 bead
+
+# Variable and thermodynamic output description
+variable kb equal 8.617333262e-5
+thermo          1000
+thermo_style    custom step temp press epair ke pe  density vol
+
+# Read forcefield file
+include forcefield.lmp
+special_bonds lj/coul 0.0 0.0 0.0 angle no dihedral no
+
+# Minimization
+minimize 1.0e-4 0.0 16000 16000
+fix boxre all box/relax iso 1.0
+minimize 1.0e-4 0.0 10 10
+unfix boxre
+write_data minimized.data
+
+
+velocity        all create 298.0 1233
+
+reset_timestep  0
+variable timestep1 equal 0.0035
+variable tdamp equal ${timestep}*100
+variable pdamp equal ${timestep}*1000
+
+# First NVT requires a lower timesptep for stability
+timestep        0.001
+fix             2 all nvt temp 298.0 298.0 0.1
+run             100000
+unfix           2
+
+reset_timestep  0
+# After NVT, a NPT can be with with a larger timestep - 3.5fs
+fix             2 all npt temp 298.0 298.0 ${tdamp} iso 1.0 1.0 ${pdamp}
+restart         1000000 micelle.restart.*
+timestep        ${timestep1}
+run             1500000
+
+dump            2 all custom 10000 lammps_validate.lammpstrj id mol type x y z vx vy vz
+run             500000
+write_data  final.data
+
+
+
+
+
+

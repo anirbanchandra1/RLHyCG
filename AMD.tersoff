@@ -1,0 +1,16 @@
+# Bond-order potential (BOP) parameters for AMD bead in an extractant molecule
+# based on the Tersoff-Brenner formalism.
+# Substituted AMD group is coarse-grained as one bead. Refer to the paper for details on the structure.
+
+# these entries are in LAMMPS "metal" units:
+#   A,B = eV; lambda1,lambda2,lambda3 = 1/Angstroms; R,D = Angstroms
+#   other quantities are unitless
+
+# format of a single entry (one or more lines):
+#   element 1, element 2, element 3, 
+#   m, gamma, lambda3, c, d, costheta0, n, beta, 
+#   lambda2, B, R, D, lambda1, A
+
+AMD  AMD  AMD  1.0 1.0 0.0 88526106.30226545  280516810.51897275 -0.25814521746267494 0.7646351978949921 0.2621216253003415
+            1.077418450096208 55.61646554048271 9.529583197022685 0.5028456421719751 1.7340792656776558 935.4326959193186
+
